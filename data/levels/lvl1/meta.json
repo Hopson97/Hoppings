@@ -1,0 +1,15 @@
+{
+    "name": "Pilot",
+    "description": "First level!",
+    "hoppings": 10,
+    "goal": 10,
+    "startPoint": {
+        "x": 310,
+        "y": 200
+    },
+    "endPoint": {
+        "x": 1200,
+        "y": 570
+    }
+}
+

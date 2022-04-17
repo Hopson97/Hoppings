@@ -8,6 +8,7 @@ ScreenGame::ScreenGame(ScreenManager* stack)
     : Screen(stack)
 {
     m_hoppingSprite.setFillColor(sf::Color::Yellow);
+    m_level.loadLevel(1);
 }
 
 void ScreenGame::onEvent(const sf::Event& e)
@@ -67,7 +68,8 @@ void ScreenGame::onFixedUpdate([[maybe_unused]] const sf::Time& dt)
     m_ticks++;
 
     // This will create 1 "Hopping" per second at 1x speed
-    if (m_ticks % Screen::getTickRate() == 0)
+    if ((m_ticks % Screen::getTickRate() == 0 || m_ticks == 1) &&
+        m_level.getMeta().hoppings > m_hoppings.size())
     {
         m_hoppings.emplace_back();
     }

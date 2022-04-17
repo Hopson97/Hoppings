@@ -111,7 +111,7 @@ int main()
         }
 
         // Rendering
-        window.clear({64, 164, 223});
+        window.clear({16, 4, 2});
         {
             TimeSlot& profilerSlot = profiler.newTimeslot("Render");
             screen->onRender(&window);
