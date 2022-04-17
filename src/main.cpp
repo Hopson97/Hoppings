@@ -31,7 +31,6 @@ int main()
     screens.update();
 
     // Time step, 30 ticks per second
-    const sf::Time timePerUpdate = sf::seconds(1.0f / 120.0f);
     sf::Clock timer;
     sf::Time lastTime = sf::Time::Zero;
     sf::Time lag = sf::Time::Zero;
@@ -102,6 +101,7 @@ int main()
         {
             TimeSlot& profilerSlot = profiler.newTimeslot("Fixed Update");
             // Fixed time update
+            sf::Time timePerUpdate = sf::seconds(1.0f / screen->getTickRate());
             while (lag >= timePerUpdate)
             {
                 lag -= timePerUpdate;

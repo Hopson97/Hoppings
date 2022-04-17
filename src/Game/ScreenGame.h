@@ -22,6 +22,8 @@ class ScreenGame final : public Screen
     void onFixedUpdate(const sf::Time& dt) override;
     void onRender(sf::RenderWindow* window) override;
 
+    int getTickRate() const override;
+
   private:
     bool outOfImageBounds(const sf::Vector2i& position) const;
     bool isGround(const sf::Vector2i& position) const;
@@ -36,4 +38,6 @@ class ScreenGame final : public Screen
 
     sf::RectangleShape m_hoppingSprite;
     bool m_isOnGround = false;
+
+    int m_tickRate = 1;
 };

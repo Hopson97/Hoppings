@@ -26,8 +26,10 @@ void ScreenManager::changeScreen(std::unique_ptr<Screen> screen)
 
 void ScreenManager::update()
 {
-    for (Action& action : m_actions) {
-        switch (action.kind) {
+    for (Action& action : m_actions)
+    {
+        switch (action.kind)
+        {
             case Action::Kind::Push:
                 m_screens.push(std::move(action.screen));
                 break;
@@ -37,7 +39,8 @@ void ScreenManager::update()
                 break;
 
             case Action::Kind::Change:
-                while (!m_screens.empty()) {
+                while (!m_screens.empty())
+                {
                     m_screens.pop();
                 }
                 m_screens.push(std::move(action.screen));
@@ -47,13 +50,24 @@ void ScreenManager::update()
     m_actions.clear();
 }
 
-Screen& ScreenManager::peekScreen() { return *m_screens.top(); }
+Screen& ScreenManager::peekScreen()
+{
+    return *m_screens.top();
+}
 
-bool ScreenManager::isEmpty() const { return m_screens.empty(); }
+bool ScreenManager::isEmpty() const
+{
+    return m_screens.empty();
+}
 
 Screen::Screen(ScreenManager* screens)
     : m_pScreens(screens)
 {
+}
+
+int Screen::getTickRate() const
+{
+    return 30;
 }
 
 bool imguiBeginMenu(const char* name)

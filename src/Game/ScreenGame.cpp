@@ -38,6 +38,26 @@ void ScreenGame::onEvent(const sf::Event& e)
 void ScreenGame::onGUI()
 {
     ImGui::Begin("Menu");
+
+    if (ImGui::Button("1x Speed"))
+    {
+        m_tickRate = 1;
+    }
+    if (ImGui::Button("2x Speed"))
+    {
+        m_tickRate = 2;
+    }
+    if (ImGui::Button("3x Speed"))
+    {
+        m_tickRate = 3;
+    }
+    if (ImGui::Button("4x Speed"))
+    {
+        m_tickRate = 4;
+    }
+
+    ImGui::Text("Current Speed: %dx", m_tickRate);
+
     if (ImGui::Button("Exit Game"))
     {
         m_pScreens->popScreen();
@@ -45,7 +65,7 @@ void ScreenGame::onGUI()
     ImGui::End();
 }
 
-void ScreenGame::onFixedUpdate(const sf::Time& dt)
+void ScreenGame::onFixedUpdate([[maybe_unused]] const sf::Time& dt)
 {
 
     // Test for solid pixels under the m_hoppingSprite
@@ -100,11 +120,16 @@ void ScreenGame::onRender(sf::RenderWindow* window)
     m_levelTexture.loadFromImage(m_levelImage);
 }
 
+int ScreenGame::getTickRate() const
+{
+    return Screen::getTickRate() * m_tickRate;
+}
+
 bool ScreenGame::outOfImageBounds(const sf::Vector2i& position) const
 {
     const auto SIZE = m_levelImage.getSize();
-    return position.x < 0 || position.y < 0 || position.x >= SIZE.x ||
-           position.y >= SIZE.y;
+    return position.x < 0 || position.y < 0 || position.x >= (int)SIZE.x ||
+           position.y >= (int)SIZE.y;
 }
 
 bool ScreenGame::isGround(const sf::Vector2i& position) const
@@ -116,6 +141,7 @@ bool ScreenGame::isGround(const sf::Vector2i& position) const
     // Check if the pixel is solid aka not transparent
     return m_levelImage.getPixel(position.x, position.y).a != 0;
 }
+
 bool ScreenGame::isAir(const sf::Vector2i& position) const
 {
     if (outOfImageBounds(position))
