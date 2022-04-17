@@ -1,7 +1,7 @@
 Language: Cpp
 BasedOnStyle: LLVM
 IndentWidth: 4
-BreakBeforeBraces: Stroustrup
+BreakBeforeBraces: Allman
 FixNamespaceComments: true
 IndentCaseLabels: true
 NamespaceIndentation: All
@@ -9,4 +9,4 @@ BreakConstructorInitializersBeforeComma: true
 ColumnLimit: 90
 AlwaysBreakTemplateDeclarations: true
 PointerAlignment: Left
-
+AllowShortFunctionsOnASingleLine: false

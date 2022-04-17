@@ -6,8 +6,10 @@
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/Texture.hpp>
 
-class ScreenGame final : public Screen {
-    enum class Menu {
+class ScreenGame final : public Screen
+{
+    enum class Menu
+    {
         MainMenu,
         SettingsMenu,
     };
@@ -21,6 +23,10 @@ class ScreenGame final : public Screen {
     void onRender(sf::RenderWindow* window) override;
 
   private:
+    bool outOfImageBounds(const sf::Vector2i& position) const;
+    bool isGround(const sf::Vector2i& position) const;
+    bool isAir(const sf::Vector2i& position) const;
+
     Menu m_activeMenu = Menu::MainMenu;
     sf::Clock m_clock;
 
@@ -29,5 +35,5 @@ class ScreenGame final : public Screen {
     sf::RectangleShape m_levelSprite;
 
     sf::RectangleShape m_hoppingSprite;
-    bool m_isgrounded = false;
+    bool m_isOnGround = false;
 };

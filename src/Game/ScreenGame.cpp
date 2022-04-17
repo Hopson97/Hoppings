@@ -4,6 +4,8 @@
 #include <imgui_sfml/imgui.h>
 #include <iostream>
 
+const int SPEED = 1;
+
 ScreenGame::ScreenGame(ScreenManager* stack)
     : Screen(stack)
 {
@@ -20,11 +22,14 @@ ScreenGame::ScreenGame(ScreenManager* stack)
 
 void ScreenGame::onEvent(const sf::Event& e)
 {
-    if (e.type == sf::Event::KeyReleased) {
-        if (e.key.code == sf::Keyboard::D) {
+    if (e.type == sf::Event::KeyReleased)
+    {
+        if (e.key.code == sf::Keyboard::D)
+        {
             m_hoppingSprite.move(1, 0);
         }
-        if (e.key.code == sf::Keyboard::A) {
+        if (e.key.code == sf::Keyboard::A)
+        {
             m_hoppingSprite.move(-1, 0);
         }
     }
@@ -33,7 +38,8 @@ void ScreenGame::onEvent(const sf::Event& e)
 void ScreenGame::onGUI()
 {
     ImGui::Begin("Menu");
-    if (ImGui::Button("Exit Game")) {
+    if (ImGui::Button("Exit Game"))
+    {
         m_pScreens->popScreen();
     }
     ImGui::End();
@@ -48,28 +54,35 @@ void ScreenGame::onFixedUpdate(const sf::Time& dt)
 
     sf::Vector2f movement{0, 0};
 
-    m_isgrounded = false;
-    for (int x = pos.x; x < pos.x + size.x; x++) {
-        if (m_levelImage.getPixel(x, pos.y + size.y).a != 0) {
-            m_isgrounded = true;
+    m_isOnGround = false;
+    for (int x = pos.x; x < pos.x + size.x; x++)
+    {
+        if (isGround({x, pos.y + size.y}))
+        {
+            m_isOnGround = true;
             break;
         }
     }
 
-    if (m_isgrounded) {
-        for (int y = pos.y + size.y - 1; y >= pos.y; y -= size.y / 4) {
-            std::cout << y << '\n';
-            if (m_levelImage.getPixel(pos.x + size.x, y).a != 0) {
+    if (m_isOnGround)
+    {
+        const int GROUND_Y = pos.y + size.y - 1;
+        for (int y = GROUND_Y; y >= pos.y; y -= size.y / 4)
+        {
+            if (y == GROUND_Y && isGround({pos.x + size.x, y}))
+            {
                 int wallsize = 0;
-                while (m_levelImage.getPixel(pos.x + size.x, y - wallsize).a != 0) {
+                while (isGround({pos.x + size.x, y - wallsize}))
+                {
                     wallsize++;
                 }
                 movement.y -= wallsize;
             }
         }
-        movement.x += 1;
+        movement.x += SPEED;
     }
-    else {
+    else
+    {
         movement.y += 1;
     }
 
@@ -85,4 +98,31 @@ void ScreenGame::onRender(sf::RenderWindow* window)
 
     // reload the image into the texture
     m_levelTexture.loadFromImage(m_levelImage);
+}
+
+bool ScreenGame::outOfImageBounds(const sf::Vector2i& position) const
+{
+    const auto SIZE = m_levelImage.getSize();
+    return position.x < 0 || position.y < 0 || position.x >= SIZE.x ||
+           position.y >= SIZE.y;
+}
+
+bool ScreenGame::isGround(const sf::Vector2i& position) const
+{
+    if (outOfImageBounds(position))
+    {
+        return false;
+    }
+    // Check if the pixel is solid aka not transparent
+    return m_levelImage.getPixel(position.x, position.y).a != 0;
+}
+bool ScreenGame::isAir(const sf::Vector2i& position) const
+{
+    if (outOfImageBounds(position))
+    {
+        return false;
+    }
+
+    // Check if the pixel is solid aka transparent
+    return m_levelImage.getPixel(position.x, position.y).a == 0;
 }
