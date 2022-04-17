@@ -9,11 +9,6 @@ const int SPEED = 1;
 ScreenGame::ScreenGame(ScreenManager* stack)
     : Screen(stack)
 {
-    m_levelImage.loadFromFile("data/levels/level1/bg.png");
-    m_levelTexture.loadFromImage(m_levelImage);
-    m_levelSprite.setTexture(&m_levelTexture);
-    m_levelSprite.setSize({m_levelImage.getSize().x, m_levelImage.getSize().y});
-
     m_hoppingSprite.setSize({16, 16});
     m_hoppingSprite.setFillColor(sf::Color::Yellow);
 
@@ -101,7 +96,7 @@ void ScreenGame::onFixedUpdate([[maybe_unused]] const sf::Time& dt)
     m_isOnGround = false;
     for (int x = pos.x; x < pos.x + size.x; x++)
     {
-        if (isGround({x, pos.y + size.y}))
+        if (m_level.isGround({x, pos.y + size.y}))
         {
             m_isOnGround = true;
             break;
@@ -114,10 +109,11 @@ void ScreenGame::onFixedUpdate([[maybe_unused]] const sf::Time& dt)
         for (int y = GROUND_Y; y >= pos.y; y -= size.y / 4)
         {
             const int OFFSET = size.y * m_direction;
-            if (y == GROUND_Y && isGround({pos.x + OFFSET, y}))
+            if (y == GROUND_Y && m_level.isGround({pos.x + OFFSET, y}))
             {
                 int wallsize = 0;
-                while (wallsize < size.y < 2 && isGround({pos.x + OFFSET, y - wallsize}))
+                while (wallsize < size.y < 2 &&
+                       m_level.isGround({pos.x + OFFSET, y - wallsize}))
                 {
                     wallsize++;
                 }
@@ -145,44 +141,14 @@ void ScreenGame::onFixedUpdate([[maybe_unused]] const sf::Time& dt)
 
 void ScreenGame::onRender(sf::RenderWindow* window)
 {
+    // Draw level
+    m_level.onRender(window);
 
-    window->draw(m_levelSprite);
-
+    // Draw hoppings
     window->draw(m_hoppingSprite);
-
-    // reload the image into the texture
-    m_levelTexture.loadFromImage(m_levelImage);
 }
 
 int ScreenGame::getTickRate() const
 {
     return Screen::getTickRate() * m_tickRate;
-}
-
-bool ScreenGame::outOfImageBounds(const sf::Vector2i& position) const
-{
-    const auto SIZE = m_levelImage.getSize();
-    return position.x < 0 || position.y < 0 || position.x >= (int)SIZE.x ||
-           position.y >= (int)SIZE.y;
-}
-
-bool ScreenGame::isGround(const sf::Vector2i& position) const
-{
-    if (outOfImageBounds(position))
-    {
-        return false;
-    }
-    // Check if the pixel is solid aka not transparent
-    return m_levelImage.getPixel(position.x, position.y).a != 0;
-}
-
-bool ScreenGame::isAir(const sf::Vector2i& position) const
-{
-    if (outOfImageBounds(position))
-    {
-        return false;
-    }
-
-    // Check if the pixel is solid aka transparent
-    return m_levelImage.getPixel(position.x, position.y).a == 0;
 }

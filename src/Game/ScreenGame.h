@@ -6,6 +6,8 @@
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/Texture.hpp>
 
+#include "Level.h"
+
 class ScreenGame final : public Screen
 {
     enum class Menu
@@ -29,12 +31,10 @@ class ScreenGame final : public Screen
     bool isGround(const sf::Vector2i& position) const;
     bool isAir(const sf::Vector2i& position) const;
 
+    Level m_level;
+
     Menu m_activeMenu = Menu::MainMenu;
     sf::Clock m_clock;
-
-    sf::Image m_levelImage;
-    sf::Texture m_levelTexture;
-    sf::RectangleShape m_levelSprite;
 
     sf::RectangleShape m_hoppingSprite;
     bool m_isOnGround = false;
