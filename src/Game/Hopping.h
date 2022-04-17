@@ -10,13 +10,29 @@ class Level;
 class Hopping
 {
   public:
+    enum class WorkType
+    {
+        Walk,
+        Dig
+    };
+
+  public:
     Hopping();
 
-    void onUpdate(const Level& level);
+    sf::IntRect getBounds() const;
+
+    void onUpdate(Level& level);
 
     void onRender(sf::RenderWindow* window, sf::RectangleShape& sprite);
 
+    void setJob(WorkType job);
+
   private:
+    void walk(Level& level, sf::Vector2f& movement);
+    void dig(Level& level, sf::Vector2f& movement);
+
+    WorkType m_workType = WorkType::Walk;
+
     sf::Vector2f m_position;
     sf::Vector2f m_size;
 

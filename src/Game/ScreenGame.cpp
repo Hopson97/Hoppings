@@ -12,15 +12,27 @@ ScreenGame::ScreenGame(ScreenManager* stack)
 
 void ScreenGame::onEvent(const sf::Event& e)
 {
-    if (e.type == sf::Event::KeyReleased)
+    if (e.type == sf::Event::MouseButtonReleased)
     {
-        if (e.key.code == sf::Keyboard::D)
+        if (e.mouseButton.button == sf::Mouse::Left)
         {
-            m_hoppingSprite.move(1, 0);
+            for (auto& hopping : m_hoppings)
+            {
+                if (hopping.getBounds().contains(e.mouseButton.x, e.mouseButton.y))
+                {
+                    hopping.setJob(Hopping::WorkType::Dig);
+                }
+            }
         }
-        if (e.key.code == sf::Keyboard::A)
+        else if (e.mouseButton.button == sf::Mouse::Right)
         {
-            m_hoppingSprite.move(-1, 0);
+            for (auto& hopping : m_hoppings)
+            {
+                if (hopping.getBounds().contains(e.mouseButton.x, e.mouseButton.y))
+                {
+                    hopping.setJob(Hopping::WorkType::Walk);
+                }
+            }
         }
     }
 }

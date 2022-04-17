@@ -48,3 +48,13 @@ bool Level::isAir(const sf::Vector2i& position) const
     // Check if the pixel is solid aka transparent
     return m_levelImage.getPixel(position.x, position.y).a == 0;
 }
+
+void Level::dig(const sf::Vector2i& position)
+{
+    if (outOfImageBounds(position))
+    {
+        return;
+    }
+
+    m_levelImage.setPixel(position.x, position.y, sf::Color::Transparent);
+}

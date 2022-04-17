@@ -16,6 +16,8 @@ class Level
     void onUpdate();
     void onRender(sf::RenderWindow* window);
 
+    void dig(const sf::Vector2i& position);
+
   private:
     bool outOfImageBounds(const sf::Vector2i& position) const;
 
