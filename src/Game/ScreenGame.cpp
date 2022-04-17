@@ -55,6 +55,30 @@ void ScreenGame::onGUI()
     {
         m_tickRate = 4;
     }
+    if (ImGui::Button("5x Speed"))
+    {
+        m_tickRate = 5;
+    }
+    if (ImGui::Button("6x Speed"))
+    {
+        m_tickRate = 6;
+    }
+    if (ImGui::Button("7x Speed"))
+    {
+        m_tickRate = 7;
+    }
+    if (ImGui::Button("8x Speed"))
+    {
+        m_tickRate = 8;
+    }
+    if (ImGui::Button("9x Speed"))
+    {
+        m_tickRate = 9;
+    }
+    if (ImGui::Button("10x Speed"))
+    {
+        m_tickRate = 10;
+    }
 
     ImGui::Text("Current Speed: %dx", m_tickRate);
 
@@ -89,17 +113,27 @@ void ScreenGame::onFixedUpdate([[maybe_unused]] const sf::Time& dt)
         const int GROUND_Y = pos.y + size.y - 1;
         for (int y = GROUND_Y; y >= pos.y; y -= size.y / 4)
         {
-            if (y == GROUND_Y && isGround({pos.x + size.x, y}))
+            const int OFFSET = size.y * m_direction;
+            if (y == GROUND_Y && isGround({pos.x + OFFSET, y}))
             {
                 int wallsize = 0;
-                while (isGround({pos.x + size.x, y - wallsize}))
+                while (wallsize < size.y < 2 && isGround({pos.x + OFFSET, y - wallsize}))
                 {
                     wallsize++;
                 }
-                movement.y -= wallsize;
+
+                // Either climb the wall instantly, or reverse direction
+                if (wallsize > size.y / 2)
+                {
+                    m_direction = !m_direction;
+                }
+                else
+                {
+                    movement.y -= wallsize;
+                }
             }
         }
-        movement.x += SPEED;
+        movement.x += m_direction == 1 ? SPEED : -SPEED;
     }
     else
     {

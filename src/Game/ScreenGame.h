@@ -38,6 +38,6 @@ class ScreenGame final : public Screen
 
     sf::RectangleShape m_hoppingSprite;
     bool m_isOnGround = false;
-
+    int m_direction = 1;
     int m_tickRate = 1;
 };
