@@ -4,15 +4,10 @@
 #include <imgui_sfml/imgui.h>
 #include <iostream>
 
-const int SPEED = 1;
-
 ScreenGame::ScreenGame(ScreenManager* stack)
     : Screen(stack)
 {
-    m_hoppingSprite.setSize({16, 16});
     m_hoppingSprite.setFillColor(sf::Color::Yellow);
-
-    m_hoppingSprite.setPosition(310, 200);
 }
 
 void ScreenGame::onEvent(const sf::Event& e)
@@ -34,45 +29,16 @@ void ScreenGame::onGUI()
 {
     ImGui::Begin("Menu");
 
-    if (ImGui::Button("1x Speed"))
+    char buf[256];
+    sprintf(buf, "FPS: %d", m_tickRate);
+
+    for (int i = 1; i <= 10; i++)
     {
-        m_tickRate = 1;
-    }
-    if (ImGui::Button("2x Speed"))
-    {
-        m_tickRate = 2;
-    }
-    if (ImGui::Button("3x Speed"))
-    {
-        m_tickRate = 3;
-    }
-    if (ImGui::Button("4x Speed"))
-    {
-        m_tickRate = 4;
-    }
-    if (ImGui::Button("5x Speed"))
-    {
-        m_tickRate = 5;
-    }
-    if (ImGui::Button("6x Speed"))
-    {
-        m_tickRate = 6;
-    }
-    if (ImGui::Button("7x Speed"))
-    {
-        m_tickRate = 7;
-    }
-    if (ImGui::Button("8x Speed"))
-    {
-        m_tickRate = 8;
-    }
-    if (ImGui::Button("9x Speed"))
-    {
-        m_tickRate = 9;
-    }
-    if (ImGui::Button("10x Speed"))
-    {
-        m_tickRate = 10;
+        sprintf(buf, "%dx Speed", i);
+        if (ImGui::Button(buf))
+        {
+            m_tickRate = i;
+        }
     }
 
     ImGui::Text("Current Speed: %dx", m_tickRate);
@@ -86,57 +52,18 @@ void ScreenGame::onGUI()
 
 void ScreenGame::onFixedUpdate([[maybe_unused]] const sf::Time& dt)
 {
+    m_ticks++;
 
-    // Test for solid pixels under the m_hoppingSprite
-    sf::Vector2f pos = m_hoppingSprite.getPosition();
-    sf::Vector2f size = m_hoppingSprite.getSize();
-
-    sf::Vector2f movement{0, 0};
-
-    m_isOnGround = false;
-    for (int x = pos.x; x < pos.x + size.x; x++)
+    // This will create 1 "Hopping" per second at 1x speed
+    if (m_ticks % Screen::getTickRate() == 0)
     {
-        if (m_level.isGround({x, pos.y + size.y}))
-        {
-            m_isOnGround = true;
-            break;
-        }
+        m_hoppings.emplace_back();
     }
 
-    if (m_isOnGround)
+    for (auto& hopping : m_hoppings)
     {
-        const int GROUND_Y = pos.y + size.y - 1;
-        for (int y = GROUND_Y; y >= pos.y; y -= size.y / 4)
-        {
-            const int OFFSET = size.y * m_direction;
-            if (y == GROUND_Y && m_level.isGround({pos.x + OFFSET, y}))
-            {
-                int wallsize = 0;
-                while (wallsize < size.y < 2 &&
-                       m_level.isGround({pos.x + OFFSET, y - wallsize}))
-                {
-                    wallsize++;
-                }
-
-                // Either climb the wall instantly, or reverse direction
-                if (wallsize > size.y / 2)
-                {
-                    m_direction = !m_direction;
-                }
-                else
-                {
-                    movement.y -= wallsize;
-                }
-            }
-        }
-        movement.x += m_direction == 1 ? SPEED : -SPEED;
+        hopping.onUpdate(m_level);
     }
-    else
-    {
-        movement.y += 1;
-    }
-
-    m_hoppingSprite.move(movement);
 }
 
 void ScreenGame::onRender(sf::RenderWindow* window)
@@ -144,8 +71,10 @@ void ScreenGame::onRender(sf::RenderWindow* window)
     // Draw level
     m_level.onRender(window);
 
-    // Draw hoppings
-    window->draw(m_hoppingSprite);
+    for (auto& hopping : m_hoppings)
+    {
+        hopping.onRender(window, m_hoppingSprite);
+    }
 }
 
 int ScreenGame::getTickRate() const

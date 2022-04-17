@@ -15,6 +15,7 @@ add_executable(${PROJECT_NAME}
 	src/Profiler.cpp
 	src/Screen.cpp
 	src/Game/Level.cpp
+	src/Game/Hopping.cpp
 	src/Game/ScreenMainMenu.cpp
 	src/Game/ScreenGame.cpp
 )
