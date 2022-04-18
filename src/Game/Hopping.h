@@ -10,10 +10,17 @@ class Level;
 class Hopping
 {
   public:
-    enum class WorkType
+    enum class JobKind
     {
         Walk,
         Dig
+    };
+
+    enum class State
+    {
+        Living,
+        Dead,
+        ReachedGoal
     };
 
   public:
@@ -25,17 +32,27 @@ class Hopping
 
     void onRender(sf::RenderWindow* window, sf::RectangleShape& sprite);
 
-    void setJob(WorkType job);
+    void setJob(JobKind job);
+
+    State getState() const
+    {
+        return m_state;
+    }
 
   private:
     void walk(Level& level, sf::Vector2f& movement);
-    void dig(Level& level, sf::Vector2f& movement);
+    void dig(Level& level);
 
-    WorkType m_workType = WorkType::Walk;
+    JobKind m_job = JobKind::Walk;
 
     sf::Vector2f m_position;
     sf::Vector2f m_size;
 
     bool m_isOnGround = false;
     int m_direction = 1;
+
+    bool m_hasReachedEnd;
+
+    State m_state = State::Living;
+    int m_fallTime = 0;
 };

@@ -1,6 +1,6 @@
 #include "ScreenGame.h"
 #include "ScreenMainMenu.h"
-#include <cmath>
+#include <algorithm>
 #include <imgui_sfml/imgui.h>
 #include <iostream>
 
@@ -21,7 +21,7 @@ void ScreenGame::onEvent(const sf::Event& e)
             {
                 if (hopping.getBounds().contains(e.mouseButton.x, e.mouseButton.y))
                 {
-                    hopping.setJob(Hopping::WorkType::Dig);
+                    hopping.setJob(Hopping::JobKind::Dig);
                 }
             }
         }
@@ -31,7 +31,7 @@ void ScreenGame::onEvent(const sf::Event& e)
             {
                 if (hopping.getBounds().contains(e.mouseButton.x, e.mouseButton.y))
                 {
-                    hopping.setJob(Hopping::WorkType::Walk);
+                    hopping.setJob(Hopping::JobKind::Walk);
                 }
             }
         }
@@ -67,9 +67,9 @@ void ScreenGame::onFixedUpdate([[maybe_unused]] const sf::Time& dt)
 {
     m_ticks++;
 
-    // This will create 1 "Hopping" per second at 1x speed
-    if ((m_ticks % Screen::getTickRate() == 0 || m_ticks == 1) &&
-        m_level.getMeta().hoppings > m_hoppings.size())
+    // This will create 1 "Hopping" every 3 seconds at 1x speed
+    if ((m_ticks % (Screen::getTickRate() * 3) == 0 || m_ticks == 1) &&
+        m_level.getMeta().hoppings > (int)m_hoppings.size())
     {
         m_hoppings.emplace_back();
     }
@@ -77,6 +77,16 @@ void ScreenGame::onFixedUpdate([[maybe_unused]] const sf::Time& dt)
     for (auto& hopping : m_hoppings)
     {
         hopping.onUpdate(m_level);
+    }
+
+    auto completed =
+        std::count_if(m_hoppings.cbegin(), m_hoppings.cend(),
+                      [](const Hopping& hopping)
+                      { return hopping.getState() == Hopping::State::ReachedGoal; });
+
+    if (completed >= m_level.getMeta().goal)
+    {
+        m_pScreens->changeScreen(std::make_unique<ScreenMainMenu>(m_pScreens));
     }
 }
 

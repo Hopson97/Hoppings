@@ -6,6 +6,7 @@
 
 Level::Level()
 {
+    m_areaSprite.setSize({32, 32});
 }
 
 void Level::loadLevel(int level)
@@ -26,6 +27,13 @@ void Level::loadLevel(int level)
 
     m_meta.startPoint = {levelJson["startPoint"]["x"], levelJson["startPoint"]["y"]};
     m_meta.endPoint = {levelJson["endPoint"]["x"], levelJson["endPoint"]["y"]};
+
+    m_winArea = {
+        getMeta().endPoint.x,
+        getMeta().endPoint.y,
+        32,
+        32,
+    };
 }
 
 void Level::onUpdate()
@@ -35,18 +43,14 @@ void Level::onUpdate()
 void Level::onRender(sf::RenderWindow* window)
 {
     // Draw a big square around the start point
-    sf::RectangleShape startPoint;
-    startPoint.setSize({32, 32});
-    startPoint.setPosition(m_meta.startPoint.x - 5, m_meta.startPoint.y - 5);
-    startPoint.setFillColor(sf::Color::Green);
-    window->draw(startPoint);
+    m_areaSprite.setPosition(m_meta.startPoint.x - 8, m_meta.startPoint.y - 8);
+    m_areaSprite.setFillColor(sf::Color::Green);
+    window->draw(m_areaSprite);
 
     // Draw a big square around the end point
-    sf::RectangleShape endPoint;
-    endPoint.setSize({32, 32});
-    endPoint.setPosition(m_meta.endPoint.x - 5, m_meta.endPoint.y - 5);
-    endPoint.setFillColor(sf::Color::Red);
-    window->draw(endPoint);
+    m_areaSprite.setPosition(m_meta.endPoint.x - 8, m_meta.endPoint.y - 8);
+    m_areaSprite.setFillColor(sf::Color::Red);
+    window->draw(m_areaSprite);
 
     // reload the image into the texture
     m_levelTexture.loadFromImage(m_levelImage);
@@ -89,9 +93,4 @@ void Level::dig(const sf::Vector2i& position)
     }
 
     m_levelImage.setPixel(position.x, position.y, sf::Color::Transparent);
-}
-
-const LevelMeta& Level::getMeta() const
-{
-    return m_meta;
 }

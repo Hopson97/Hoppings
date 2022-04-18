@@ -31,11 +31,21 @@ class Level
 
     void dig(const sf::Vector2i& position);
 
-    const LevelMeta& getMeta() const;
+    const LevelMeta& getMeta() const
+    {
+        return m_meta;
+    }
+
+    const sf::IntRect& getWinArea() const
+    {
+        return m_winArea;
+    }
 
   private:
     bool outOfImageBounds(const sf::Vector2i& position) const;
 
+    sf::IntRect m_winArea;
+    sf::RectangleShape m_areaSprite;
     LevelMeta m_meta;
     sf::Image m_levelImage;
     sf::Texture m_levelTexture;
