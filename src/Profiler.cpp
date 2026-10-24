@@ -1,4 +1,5 @@
 #include "Profiler.h"
+#include <imgui.h>
 
 Profiler::Profiler()
 {

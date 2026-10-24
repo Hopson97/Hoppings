@@ -1,13 +1,9 @@
 # Linux
-/bin
-hoppings
 build/
 
 # Windows
 *.dll
 *.exe
-*.sln
-*.vcxproj
 *.filters
 *.user
 *.vs
@@ -21,3 +17,11 @@ Release/
 *.srctrlprj
 *.srctrldb
 *.srctrlbm
+
+# Vcpkg
+vcpkg_installed/
+
+PROJECT_NAME_PLACEHOLDER/
+
+*.aseprite
+*.ase

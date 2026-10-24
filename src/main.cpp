@@ -4,13 +4,13 @@
 #include "Profiler.h"
 #include "Screen.h"
 #include <SFML/Graphics/RenderWindow.hpp>
+#include <imgui.h>
 #include <imgui_sfml/imgui-SFML.h>
-#include <imgui_sfml/imgui.h>
 
 int main()
 {
     // Set up window and gui
-    sf::RenderWindow window({1600, 900}, "game");
+    sf::RenderWindow window(sf::VideoMode{{1600, 900}}, "Hoppings");
     window.setFramerateLimit(60);
     window.setKeyRepeatEnabled(false);
     ImGui::SFML::Init(window);
@@ -20,7 +20,7 @@ int main()
     // Update ImGUI UI scaling for 4K monitors. For some reason looks bad on linux hence
     // the ifdef
 #ifndef __linux__
-    if (sf::VideoMode::getDesktopMode().width > 3600)
+    if (sf::VideoMode::getDesktopMode().size.x > 3600)
     {
         ImGui::GetIO().FontGlobalScale = ((window.getSize().x) / 1024.f);
     }
@@ -48,86 +48,84 @@ int main()
 
             TimeSlot& profilerSlot = profiler.newTimeslot("Events");
 
-            sf::Event e;
-            while (window.pollEvent(e))
+            while (window.pollEvent())
             {
 
-                ImGui::SFML::ProcessEvent(e);
-                screen->onEvent(e);
-                keyboard.update(e);
-                switch (e.type)
+                while (auto event = window.pollEvent())
                 {
-                    case sf::Event::Closed:
-                        window.close();
-                        break;
+                    ImGui::SFML::ProcessEvent(window, *event);
+                    keyboard.update(*event);
+                    screen->onEvent(*event);
 
-                    case sf::Event::KeyReleased:
-                        if (e.key.code == sf::Keyboard::Escape)
+                    if (event->is<sf::Event::Closed>())
+                    {
+                        window.close();
+                    }
+                    if (auto key = event->getIf<sf::Event::KeyReleased>())
+                    {
+                        if (key->code == sf::Keyboard::Key::Escape)
                         {
                             window.close();
                         }
-                        break;
-
-                    default:
-                        break;
+                    }
                 }
+                profilerSlot.stop();
             }
-            profilerSlot.stop();
-        }
 
-        // Get times
-        sf::Time dt = updateClock.restart();
-        sf::Time time = timer.getElapsedTime();
-        sf::Time elapsed = time - lastTime;
-        lastTime = time;
-        lag += elapsed;
+            // Get times
+            sf::Time dt = updateClock.restart();
+            sf::Time time = timer.getElapsedTime();
+            sf::Time elapsed = time - lastTime;
+            lastTime = time;
+            lag += elapsed;
 
-        // User input (real time)
-        {
-            TimeSlot& profilerSlot = profiler.newTimeslot("Input");
-            screen->onInput(keyboard, window);
-            profilerSlot.stop();
-        }
-
-        // Game update
-        {
-            TimeSlot& profilerSlot = profiler.newTimeslot("Update");
-            screen->onUpdate(dt);
-            ImGui::SFML::Update(window, dt);
-            profilerSlot.stop();
-        }
-
-        // Fixed update
-        {
-            TimeSlot& profilerSlot = profiler.newTimeslot("Fixed Update");
-            // Fixed time update
-            sf::Time timePerUpdate = sf::seconds(1.0f / screen->getTickRate());
-            while (lag >= timePerUpdate)
+            // User input (real time)
             {
-                lag -= timePerUpdate;
-                screen->onFixedUpdate(elapsed);
+                TimeSlot& profilerSlot = profiler.newTimeslot("Input");
+                screen->onInput(keyboard, window);
+                profilerSlot.stop();
             }
-            profilerSlot.stop();
-        }
 
-        // Rendering
-        window.clear({16, 4, 2});
-        {
-            TimeSlot& profilerSlot = profiler.newTimeslot("Render");
-            screen->onRender(&window);
-            profilerSlot.stop();
-        }
+            // Game update
+            {
+                TimeSlot& profilerSlot = profiler.newTimeslot("Update");
+                screen->onUpdate(dt);
+                ImGui::SFML::Update(window, dt);
+                profilerSlot.stop();
+            }
 
-        // GUI/ ImGUI stuff
-        {
-            TimeSlot& profilerSlot = profiler.newTimeslot("GUI");
-            screen->onGUI();
-            profilerSlot.stop();
-        }
+            // Fixed update
+            {
+                TimeSlot& profilerSlot = profiler.newTimeslot("Fixed Update");
+                // Fixed time update
+                sf::Time timePerUpdate = sf::seconds(1.0f / screen->getTickRate());
+                while (lag >= timePerUpdate)
+                {
+                    lag -= timePerUpdate;
+                    screen->onFixedUpdate(elapsed);
+                }
+                profilerSlot.stop();
+            }
 
-        profiler.onGUI();
-        ImGui::SFML::Render(window);
-        window.display();
-        screens.update();
+            // Rendering
+            window.clear({16, 4, 2});
+            {
+                TimeSlot& profilerSlot = profiler.newTimeslot("Render");
+                screen->onRender(&window);
+                profilerSlot.stop();
+            }
+
+            // GUI/ ImGUI stuff
+            {
+                TimeSlot& profilerSlot = profiler.newTimeslot("GUI");
+                screen->onGUI();
+                profilerSlot.stop();
+            }
+
+            profiler.onGUI();
+            ImGui::SFML::Render(window);
+            window.display();
+            screens.update();
+        }
     }
 }

@@ -9,10 +9,10 @@ Animation::Animation(unsigned frameWidth, unsigned frameHeight)
 void Animation::addFrame(unsigned row, unsigned index, sf::Time delay)
 {
     sf::IntRect bounds;
-    bounds.top = FRAME_HEIGHT * row;
-    bounds.height = FRAME_HEIGHT;
-    bounds.width = FRAME_WIDTH;
-    bounds.left = index * FRAME_WIDTH;
+    bounds.position.y = FRAME_HEIGHT * row;
+    bounds.size.y = FRAME_HEIGHT;
+    bounds.size.x = FRAME_WIDTH;
+    bounds.position.x = index * FRAME_WIDTH;
 
     m_frames.emplace_back(bounds, delay);
 }

@@ -1,8 +1,8 @@
 #include "ScreenGame.h"
 #include "ScreenMainMenu.h"
 #include <algorithm>
-#include <imgui_sfml/imgui.h>
 #include <iostream>
+#include <imgui.h>
 
 ScreenGame::ScreenGame(ScreenManager* stack)
     : Screen(stack)
@@ -13,23 +13,23 @@ ScreenGame::ScreenGame(ScreenManager* stack)
 
 void ScreenGame::onEvent(const sf::Event& e)
 {
-    if (e.type == sf::Event::MouseButtonReleased)
+    if (auto mouse = e.getIf<sf::Event::MouseButtonReleased>())
     {
-        if (e.mouseButton.button == sf::Mouse::Left)
+        if (mouse->button == sf::Mouse::Button::Left)
         {
             for (auto& hopping : m_hoppings)
             {
-                if (hopping.getBounds().contains(e.mouseButton.x, e.mouseButton.y))
+                if (hopping.getBounds().contains(mouse->position))
                 {
                     hopping.setJob(Hopping::JobKind::Dig);
                 }
             }
         }
-        else if (e.mouseButton.button == sf::Mouse::Right)
+        else if (mouse->button == sf::Mouse::Button::Right)
         {
             for (auto& hopping : m_hoppings)
             {
-                if (hopping.getBounds().contains(e.mouseButton.x, e.mouseButton.y))
+                if (hopping.getBounds().contains(mouse->position))
                 {
                     hopping.setJob(Hopping::JobKind::Walk);
                 }
@@ -42,13 +42,12 @@ void ScreenGame::onGUI()
 {
     ImGui::Begin("Menu");
 
-    char buf[256];
-    sprintf(buf, "FPS: %d", m_tickRate);
+    //auto fpsString = std::format("FPS: {}", m_tickRate);
 
     for (int i = 1; i <= 10; i++)
     {
-        sprintf(buf, "%dx Speed", i);
-        if (ImGui::Button(buf))
+        auto string = std::format("{}x Speed", i);
+        if (ImGui::Button(string.c_str()))
         {
             m_tickRate = i;
         }

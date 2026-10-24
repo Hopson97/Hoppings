@@ -1,8 +1,11 @@
 #pragma once
 
+
+#include <vector>
+
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/System/Clock.hpp>
-#include <vector>
+#include <SFML/System/Time.hpp>
 
 class Animation
 {

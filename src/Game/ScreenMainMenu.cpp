@@ -1,6 +1,6 @@
 #include "ScreenMainMenu.h"
 #include "ScreenGame.h"
-#include <imgui_sfml/imgui.h>
+#include <imgui.h>
 
 ScreenMainMenu::ScreenMainMenu(ScreenManager* stack)
     : Screen(stack)

@@ -10,7 +10,7 @@ Hopping::Hopping()
 
 sf::IntRect Hopping::getBounds() const
 {
-    return sf::IntRect(m_position.x, m_position.y, m_size.x, m_size.y);
+    return {sf::Vector2i{m_position}, sf::Vector2i{m_size}};
 }
 
 void Hopping::onUpdate(Level& level)
@@ -24,7 +24,7 @@ void Hopping::onUpdate(Level& level)
         m_isOnGround = false;
         for (int x = m_position.x; x < m_position.x + m_size.x; x++)
         {
-            if (level.isGround({x, m_position.y + m_size.y}))
+            if (level.isGround({x, (int)(m_position.y + m_size.y)}))
             {
                 if (m_fallTime > m_size.y * 5.0f)
                 {
@@ -71,7 +71,7 @@ void Hopping::onUpdate(Level& level)
         //  }
 
         // Set state to reached goal if the hopping reached the end of the level
-        if (getBounds().intersects(level.getWinArea()))
+        if (getBounds().findIntersection(level.getWinArea()))
         {
             m_state = State::ReachedGoal;
         }
@@ -100,12 +100,12 @@ void Hopping::walk(Level& level, sf::Vector2f& movement)
         const int GROUND_Y = m_position.y + m_size.y - 1;
         for (int y = GROUND_Y; y >= m_position.y; y -= m_size.y / 4)
         {
-            const int OFFSET = m_size.y * m_direction;
-            if (y == GROUND_Y && level.isGround({m_position.x + OFFSET, y}))
+            const float OFFSET = m_size.y * m_direction;
+            if (y == GROUND_Y && level.isGround({(int)m_position.x + (int)OFFSET, y}))
             {
                 int wallSize = 0;
                 while (wallSize < m_size.y &&
-                       level.isGround({(int)m_position.x + OFFSET, y - wallSize}))
+                       level.isGround({(int)m_position.x + (int)OFFSET, y - wallSize}))
                 {
                     wallSize++;
                 }
@@ -131,9 +131,9 @@ void Hopping::dig(Level& level)
     {
         for (int x = m_position.x - 5; x < m_position.x + m_size.x + 5; x++)
         {
-            if (level.isGround({x, m_position.y + m_size.y}))
+            if (level.isGround({x, (int)(m_position.y + m_size.y)}))
             {
-                level.dig({x, m_position.y + m_size.y});
+                level.dig({(int)x, (int)(m_position.y + m_size.y)});
             }
         }
     }

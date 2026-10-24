@@ -13,7 +13,7 @@ void Level::loadLevel(int level)
 {
     m_levelImage.loadFromFile("data/levels/lvl" + std::to_string(level) + "/bg.png");
     m_levelTexture.loadFromImage(m_levelImage);
-    m_levelSprite.setSize({m_levelImage.getSize().x, m_levelImage.getSize().y});
+    m_levelSprite.setSize(sf::Vector2f{m_levelImage.getSize()});
     m_levelSprite.setTexture(&m_levelTexture);
 
     std::ifstream levelStream("data/levels/lvl" + std::to_string(level) + "/meta.json");
@@ -29,10 +29,8 @@ void Level::loadLevel(int level)
     m_meta.endPoint = {levelJson["endPoint"]["x"], levelJson["endPoint"]["y"]};
 
     m_winArea = {
-        getMeta().endPoint.x,
-        getMeta().endPoint.y,
-        32,
-        32,
+        sf::Vector2i{getMeta().endPoint},
+        {32, 32},
     };
 }
 
@@ -43,12 +41,12 @@ void Level::onUpdate()
 void Level::onRender(sf::RenderWindow* window)
 {
     // Draw a big square around the start point
-    m_areaSprite.setPosition(m_meta.startPoint.x - 8, m_meta.startPoint.y - 8);
+    m_areaSprite.setPosition({m_meta.startPoint.x - 8, m_meta.startPoint.y - 8});
     m_areaSprite.setFillColor(sf::Color::Green);
     window->draw(m_areaSprite);
 
     // Draw a big square around the end point
-    m_areaSprite.setPosition(m_meta.endPoint.x - 8, m_meta.endPoint.y - 8);
+    m_areaSprite.setPosition({m_meta.endPoint.x - 8, m_meta.endPoint.y - 8});
     m_areaSprite.setFillColor(sf::Color::Red);
     window->draw(m_areaSprite);
 
@@ -71,7 +69,7 @@ bool Level::isGround(const sf::Vector2i& position) const
         return false;
     }
     // Check if the pixel is solid aka not transparent
-    return m_levelImage.getPixel(position.x, position.y).a != 0;
+    return m_levelImage.getPixel(sf::Vector2u{position}).a != 0;
 }
 
 bool Level::isAir(const sf::Vector2i& position) const
@@ -82,7 +80,7 @@ bool Level::isAir(const sf::Vector2i& position) const
     }
 
     // Check if the pixel is solid aka transparent
-    return m_levelImage.getPixel(position.x, position.y).a == 0;
+    return m_levelImage.getPixel(sf::Vector2u{position}).a == 0;
 }
 
 void Level::dig(const sf::Vector2i& position)
@@ -92,5 +90,5 @@ void Level::dig(const sf::Vector2i& position)
         return;
     }
 
-    m_levelImage.setPixel(position.x, position.y, sf::Color::Transparent);
+    m_levelImage.setPixel(sf::Vector2u{position}, sf::Color::Transparent);
 }

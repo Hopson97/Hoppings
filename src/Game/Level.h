@@ -12,8 +12,8 @@ struct LevelMeta
     int hoppings = 0;
     int goal = 0;
 
-    sf::Vector2i startPoint;
-    sf::Vector2i endPoint;
+    sf::Vector2f startPoint;
+    sf::Vector2f endPoint;
 };
 
 class Level

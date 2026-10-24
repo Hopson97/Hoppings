@@ -19,34 +19,29 @@ target_debug() {
 # Create folder for distribution
 if [ "$1" = "release" ]
 then
-    if [ -d "$hoppings " ]
+    if [ -d "$hoppings" ]
     then
-        rm -rf -d hoppings 
+        rm -rf -d hoppings
     fi
 
-    mkdir -p hoppings 
+    mkdir -p hoppings
 fi
 
 # Creates the folder for the buildaries
-mkdir -p hoppings
-mkdir -p hoppings/Data
+mkdir -p hoppings 
+mkdir -p hoppings/assets
 mkdir -p build
 mkdir -p build/release
 mkdir -p build/debug
 cd build
 
-if [ "$1" = "install" ]
-then
-    conan install .. -s compiler.libcxx=libstdc++11 --build=missing
-fi
-
 # Builds target
 if [ "$1" = "release" ]
 then
     target_release
-    cp build/release/bin/hoppings  hoppings/hoppings 
+    cp build/release/hoppings hoppings/hoppings
 else
     target_debug
 fi
 
-cp -R data hoppings/
+cp -R assets hoppings/

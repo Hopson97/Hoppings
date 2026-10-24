@@ -1,12 +1,10 @@
-add_library(imgui_sfml
+add_library(
+    imgui_sfml
+    imgui_impl_opengl3.cpp
     imgui-SFML.cpp
-    imgui.cpp
-    imgui_demo.cpp
-    imgui_draw.cpp
-    imgui_widgets.cpp
-)
+)   
 
-
-target_link_libraries(imgui_sfml 
-    ${CONAN_LIBS}
+target_link_libraries(imgui_sfml PRIVATE
+    sfml-system sfml-graphics sfml-window
+    imgui::imgui
 )

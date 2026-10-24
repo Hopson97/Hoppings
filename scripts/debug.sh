@@ -1,4 +1,4 @@
 #!/bin/bash
 
-sh scripts/build.sh
-gdb ./build/debug/bin/hoppings 
+./scripts/build.sh
+gdb ./build/debug/hoppings  

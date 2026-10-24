@@ -1,5 +1,5 @@
 #include "Screen.h"
-#include <imgui_sfml/imgui.h>
+#include <imgui.h>
 
 void ScreenManager::pushScreen(std::unique_ptr<Screen> screen)
 {
